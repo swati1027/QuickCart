@@ -1,7 +1,7 @@
 'use client'
 import { productsDummyData, userDummyData } from "@/assets/assets";
 import { useAuth, useUser } from "@clerk/nextjs";
-import { getAuth, User } from "@clerk/nextjs/server";
+
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { createContext, useContext, useEffect, useState } from "react";
@@ -151,7 +151,7 @@ export const AppContextProvider = (props) => {
     }, [user])
 
     const value = {
-      user,getToken,getAuth,
+      user,getToken,
         currency, router,
         isSeller, setIsSeller,
         userData, fetchUserData,
