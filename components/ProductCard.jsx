@@ -1,3 +1,4 @@
+'use client'
 import React from 'react'
 import { assets } from '@/assets/assets'
 import Image from 'next/image'
@@ -7,7 +8,7 @@ const ProductCard = ({ product }) => {
 
   const { currency, router } = useAppContext()
 
-  // ✅ ADD THIS HERE (before return)
+  // ✅ Safe image fallback
   const imageSrc =
     Array.isArray(product.image) && product.image.length > 0
       ? product.image[0]
@@ -15,12 +16,16 @@ const ProductCard = ({ product }) => {
 
   return (
     <div
-      onClick={() => { router.push('/product/' + product._id); scrollTo(0, 0) }}
+      onClick={() => {
+        router.push('/product/' + product._id)
+        scrollTo(0, 0)
+      }}
       className="flex flex-col items-start gap-0.5 max-w-[200px] w-full cursor-pointer"
     >
-      <div className="cursor-pointer group relative bg-gray-500/10 rounded-lg w-full h-52 flex items-center justify-center">
+      {/* ✅ Product Image */}
+      <div className="group relative bg-gray-500/10 rounded-lg w-full h-52 flex items-center justify-center">
         <Image
-          src={imageSrc}   
+          src={imageSrc}
           alt={product.name}
           className="group-hover:scale-105 transition object-cover w-4/5 h-4/5 md:w-full md:h-full"
           width={800}
@@ -36,16 +41,19 @@ const ProductCard = ({ product }) => {
         </button>
       </div>
 
+      {/* ✅ Product Name */}
       <p className="md:text-base font-medium pt-2 w-full truncate">
-        {product.name}
+        {product?.name}
       </p>
 
+      {/* ✅ Description */}
       <p className="w-full text-xs text-gray-500/70 max-sm:hidden truncate">
-        {product.description}
+        {product?.description}
       </p>
 
+      {/* ✅ Rating */}
       <div className="flex items-center gap-2">
-        <p className="text-xs">{4.5}</p>
+        <p className="text-xs">4.5</p>
         <div className="flex items-center gap-0.5">
           {Array.from({ length: 5 }).map((_, index) => (
             <Image
@@ -58,14 +66,28 @@ const ProductCard = ({ product }) => {
         </div>
       </div>
 
+      {/* ✅ Price Section (FIXED) */}
       <div className="flex items-end justify-between w-full mt-1">
-        <p className="text-base font-medium">
-          {currency}{product.offerPrice}
-        </p>
 
+        <div className="flex gap-2 items-center">
+
+          {/* ✅ Original Price */}
+          <span className="text-gray-400 line-through text-sm">
+            {currency}{product?.price ?? "0"}
+          </span>
+
+          {/* ✅ Offer Price (fallback to price if missing) */}
+          <span className="text-base font-medium text-orange-600">
+            {currency}{product?.offerPrice ?? product?.price ?? "0"}
+          </span>
+
+        </div>
+
+        {/* ✅ Button */}
         <button className="max-sm:hidden px-4 py-1.5 text-gray-500 border border-gray-500/20 rounded-full text-xs hover:bg-slate-50 transition">
           Buy now
         </button>
+
       </div>
     </div>
   )

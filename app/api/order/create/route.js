@@ -1,52 +1,60 @@
-import { inngest } from "@/config/inngest";
-import Product from "@/models/product";
-import User from "@/models/User";
+import connectDB from "@/config/db";
+import Order from "@/models/Order";
+import Product from "@/models/Product";
 import { getAuth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
+export async function POST(request) {
+  try {
+    const { userId } = getAuth(request);
+    const { items, addressId } = await request.json();
 
+    await connectDB();
 
-export async function POST(request){
-    try{
-        const {userId}=getAuth(request)
-        const {address,items}=await request.json();
+    // ✅ FETCH PRODUCTS FROM DB
+    const orderItems = await Promise.all(
+      items.map(async (item) => {
+        const product = await Product.findById(item.product);
 
-        if(!address|| items.lenght===0){
-            return NextResponse.json({success:false, message:'invalid data'})
-        }
+        if (!product) return null;
 
-        //calculate amount using items
-        const amount =await items.reduce(async (acc,item)=>{
-            const product=await Product.findById(item.product);
-            return acc + product.offerPrice * item.quantity;
+        return {
+          product: product._id,
+          name: product.name, // ✅ snapshot
+          price: product.offeredPrice, // ✅ snapshot
+          image: product.image[0], // ✅ snapshot
+          quantity: item.quantity
+        };
+      })
+    );
 
-        },0)
+    // remove null items
+    const filteredItems = orderItems.filter(item => item !== null);
 
-        await inngest.send({
-            name:'order/created',
-            data:{
-                userId,
-                address,
-                items,
-                amount: amount+Math.floor(amount*0.02),
-                date:Date.now()
-            }
-        })
+    // ✅ CALCULATE TOTAL
+    const amount = filteredItems.reduce(
+      (total, item) => total + item.price * item.quantity,
+      0
+    );
 
-        //clear user cart
-        const user=await User.findById(userId)
-        user.cartItems={}
-        await user.save() 
+    const order = await Order.create({
+      userId,
+      items: filteredItems,
+      address: addressId,
+      amount
+    });
 
-        return NextResponse.json({success:true,message:"order placed"})
+    return NextResponse.json({
+      success: true,
+      order
+    });
 
+  } catch (error) {
+    console.error("ORDER ERROR:", error);
 
-        
-    }catch(error){
-        console.log(error)
-        return NextResponse.json({success:false,message:"order not placed"})
-
-
-
-    }
+    return NextResponse.json({
+      success: false,
+      message: error.message
+    });
+  }
 }

@@ -1,12 +1,13 @@
 import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema({
-  _id: { type: String, required: true }, // Ensure this is String for Clerk IDs
-  imageUrl: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
-  name: { type: String },
+  userId: { type: String, required: true, unique: true },
+  name: String,
+  email: { type: String, unique: true },
+  imageUrl: String,
   cartItems: { type: Object, default: {} }
-}, { minimize: false });
+}, { minimize: false }); // ← prevents empty {} from being stripped
 
-const User = mongoose.models.user || mongoose.model("user", userSchema);
+const User = mongoose.models.User || mongoose.model("User", userSchema);
+
 export default User;
