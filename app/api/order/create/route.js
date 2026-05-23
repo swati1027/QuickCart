@@ -11,7 +11,6 @@ export async function POST(request) {
 
     await connectDB();
 
-    // ✅ FETCH PRODUCTS FROM DB
     const orderItems = await Promise.all(
       items.map(async (item) => {
         const product = await Product.findById(item.product);
@@ -20,28 +19,31 @@ export async function POST(request) {
 
         return {
           product: product._id,
-          name: product.name, // ✅ snapshot
-          price: product.offeredPrice, // ✅ snapshot
-          image: product.image[0], // ✅ snapshot
+          name: product.name,
+          price: product.offeredPrice,
+          image: product.image[0],
           quantity: item.quantity
         };
       })
     );
 
-    // remove null items
     const filteredItems = orderItems.filter(item => item !== null);
 
-    // ✅ CALCULATE TOTAL
-    const amount = filteredItems.reduce(
-      (total, item) => total + item.price * item.quantity,
-      0
-    );
+    // ✅ FIXED: round to 2 decimal places
+    const amount = Math.round(
+      filteredItems.reduce(
+        (total, item) => total + item.price * item.quantity,
+        0
+      ) * 100
+    ) / 100;
 
     const order = await Order.create({
       userId,
       items: filteredItems,
       address: addressId,
-      amount
+      amount,
+      date: Date.now(),
+      paymentType: "COD"
     });
 
     return NextResponse.json({
@@ -51,7 +53,6 @@ export async function POST(request) {
 
   } catch (error) {
     console.error("ORDER ERROR:", error);
-
     return NextResponse.json({
       success: false,
       message: error.message
