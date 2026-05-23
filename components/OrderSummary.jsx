@@ -65,6 +65,34 @@ const OrderSummary = () => {
     }
   };
 
+  const createOrderStripe = async () => {
+    try {
+      if (!selectedAddress) return toast.error("Please select address");
+
+      let cartItemsArray = Object.keys(cartItems)
+        .map((key) => ({ product: key, quantity: cartItems[key] }))
+        .filter((item) => item.quantity > 0);
+
+      if (cartItemsArray.length === 0) return toast.error("Cart is empty");
+
+      const token = await getToken();
+      const { data } = await axios.post(
+        "/api/order/stripe",
+        {
+          address: selectedAddress._id,
+          items: cartItemsArray,
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (data.success) {
+        window.location.href = data.url;
+      }else {
+        toast.error(data.message);
+      }
+    }catch (error) {
+
+    }
+  };
   useEffect(() => {
     if (user) fetchUserAddresses();
   }, [user]);
@@ -160,7 +188,7 @@ const OrderSummary = () => {
         </div>
       </div>
 
-      <button onClick={createOrder} className="w-full bg-orange-600 text-white py-3 mt-5 hover:bg-orange-700">
+      <button onClick={createOrderStripe} className="w-full bg-orange-600 text-white py-3 mt-5 hover:bg-orange-700">
         Place Order
       </button>
     </div>

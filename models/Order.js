@@ -22,7 +22,9 @@ const orderSchema = new mongoose.Schema({
   },
 
   amount: Number,
-  date: { type: Number, default: Date.now }
+  date: { type: Number, default: Date.now },
+  paymentType:{type: String, required: true},
+  isPaid:{type: Boolean, required: true, default: false},
 });
 
 const Order = mongoose.models.Order || mongoose.model("Order", orderSchema);
