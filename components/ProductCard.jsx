@@ -8,7 +8,6 @@ const ProductCard = ({ product }) => {
 
   const { currency, router } = useAppContext()
 
-  // ✅ Safe image fallback
   const imageSrc =
     Array.isArray(product.image) && product.image.length > 0
       ? product.image[0]
@@ -22,7 +21,7 @@ const ProductCard = ({ product }) => {
       }}
       className="flex flex-col items-start gap-0.5 max-w-[200px] w-full cursor-pointer"
     >
-      {/* ✅ Product Image */}
+      {/* Product Image */}
       <div className="group relative bg-gray-500/10 rounded-lg w-full h-52 flex items-center justify-center">
         <Image
           src={imageSrc}
@@ -41,17 +40,17 @@ const ProductCard = ({ product }) => {
         </button>
       </div>
 
-      {/* ✅ Product Name */}
+      {/* Product Name */}
       <p className="md:text-base font-medium pt-2 w-full truncate">
         {product?.name}
       </p>
 
-      {/* ✅ Description */}
+      {/* Description */}
       <p className="w-full text-xs text-gray-500/70 max-sm:hidden truncate">
         {product?.description}
       </p>
 
-      {/* ✅ Rating */}
+      {/* Rating */}
       <div className="flex items-center gap-2">
         <p className="text-xs">4.5</p>
         <div className="flex items-center gap-0.5">
@@ -66,28 +65,25 @@ const ProductCard = ({ product }) => {
         </div>
       </div>
 
-      {/* ✅ Price Section (FIXED) */}
+      {/* Price Section */}
       <div className="flex items-end justify-between w-full mt-1">
-
         <div className="flex gap-2 items-center">
 
-          {/* ✅ Original Price */}
+          {/* Original Price */}
           <span className="text-gray-400 line-through text-sm">
             {currency}{product?.price ?? "0"}
           </span>
 
-          {/* ✅ Offer Price (fallback to price if missing) */}
+          {/* ✅ FIXED: offeredPrice not offerPrice */}
           <span className="text-base font-medium text-orange-600">
-            {currency}{product?.offerPrice ?? product?.price ?? "0"}
+            {currency}{product?.offeredPrice ?? product?.price ?? "0"}
           </span>
 
         </div>
 
-        {/* ✅ Button */}
         <button className="max-sm:hidden px-4 py-1.5 text-gray-500 border border-gray-500/20 rounded-full text-xs hover:bg-slate-50 transition">
           Buy now
         </button>
-
       </div>
     </div>
   )

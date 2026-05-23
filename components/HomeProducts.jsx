@@ -12,23 +12,20 @@ const HomeProducts = () => {
         Popular products
       </p>
 
-      {/* ✅ EMPTY STATE */}
       {products.length === 0 ? (
         <p className="mt-6 text-gray-500">No products available</p>
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 mt-6 pb-14 w-full">
-          
-          {/* ✅ USE _id AS KEY */}
           {products.map((product) => (
             <ProductCard key={product._id} product={product} />
           ))}
-
         </div>
       )}
 
       <button
         onClick={() => router.push('/all-products')}
         className="px-12 py-2.5 border rounded text-gray-500/70 hover:bg-slate-50/90 transition"
+        suppressHydrationWarning
       >
         See more
       </button>
