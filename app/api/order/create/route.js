@@ -7,16 +7,14 @@ import { NextResponse } from "next/server";
 export async function POST(request) {
   try {
     const { userId } = getAuth(request);
-    const { items, addressId } = await request.json();
+    const { items, address } = await request.json(); // ← fixed: addressId → address
 
     await connectDB();
 
     const orderItems = await Promise.all(
       items.map(async (item) => {
         const product = await Product.findById(item.product);
-
         if (!product) return null;
-
         return {
           product: product._id,
           name: product.name,
@@ -29,18 +27,20 @@ export async function POST(request) {
 
     const filteredItems = orderItems.filter(item => item !== null);
 
-    // ✅ FIXED: round to 2 decimal places
-    const amount = Math.round(
+    const subtotal = Math.round(
       filteredItems.reduce(
         (total, item) => total + item.price * item.quantity,
         0
       ) * 100
     ) / 100;
 
+    const tax = Math.round(subtotal * 0.02 * 100) / 100;
+    const amount = Math.round((subtotal + tax) * 100) / 100;
+
     const order = await Order.create({
       userId,
       items: filteredItems,
-      address: addressId,
+      address, // ← fixed: addressId → address
       amount,
       date: Date.now(),
       paymentType: "COD"

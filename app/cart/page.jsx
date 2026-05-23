@@ -20,7 +20,6 @@ getCartCount
 return (
 <> <Navbar />
 
-
   <div className="flex flex-col md:flex-row gap-10 px-6 md:px-16 lg:px-32 pt-14 mb-20">
 
     {/* CART ITEMS */}
@@ -59,7 +58,6 @@ return (
 
               const quantity = Number(cartItems[itemId]);
 
-              // ✅ FIXED: using offeredPrice (with 'd') to match schema
               const hasOffer =
                 product.offeredPrice !== undefined &&
                 product.offeredPrice !== null &&
@@ -90,6 +88,7 @@ return (
                       <button
                         className="md:hidden text-xs text-orange-600 mt-1"
                         onClick={() => updateCartQuantity(product._id, 0)}
+                        suppressHydrationWarning
                       >
                         Remove
                       </button>
@@ -100,6 +99,7 @@ return (
                       <button
                         className="text-xs text-orange-600 mt-1"
                         onClick={() => updateCartQuantity(product._id, 0)}
+                        suppressHydrationWarning
                       >
                         Remove
                       </button>
@@ -114,7 +114,10 @@ return (
                   {/* QUANTITY */}
                   <td className="py-4 md:px-4 px-1">
                     <div className="flex items-center md:gap-2 gap-1">
-                      <button onClick={() => updateCartQuantity(product._id, quantity - 1)}>
+                      <button
+                        onClick={() => updateCartQuantity(product._id, quantity - 1)}
+                        suppressHydrationWarning
+                      >
                         <Image src={assets.decrease_arrow} alt="decrease" className="w-4 h-4" />
                       </button>
 
@@ -125,9 +128,13 @@ return (
                           updateCartQuantity(product._id, Number(e.target.value))
                         }
                         className="w-8 border text-center appearance-none"
+                        suppressHydrationWarning
                       />
 
-                      <button onClick={() => addToCart(product._id)}>
+                      <button
+                        onClick={() => addToCart(product._id)}
+                        suppressHydrationWarning
+                      >
                         <Image src={assets.increase_arrow} alt="increase" className="w-4 h-4" />
                       </button>
                     </div>
@@ -149,6 +156,7 @@ return (
       <button
         onClick={() => router.push('/all-products')}
         className="group flex items-center mt-6 gap-2 text-orange-600"
+        suppressHydrationWarning
       >
         <Image
           className="group-hover:-translate-x-1 transition"

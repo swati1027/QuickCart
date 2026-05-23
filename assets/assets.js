@@ -2,6 +2,7 @@ import logo from "./logo.svg";
 import search_icon from "./search_icon.svg";
 import user_icon from "./user_icon.svg";
 import cart_icon from "./cart_icon.svg";
+import stripe_logo from "./stripe_logo.png";
 import add_icon from "./add_icon.svg";
 import order_icon from "./order_icon.svg";
 import instagram_icon from "./instagram_icon.svg";
@@ -52,6 +53,7 @@ export const assets = {
   search_icon,
   user_icon,
   cart_icon,
+  stripe_logo,
   add_icon,
   order_icon,
   instagram_icon,
@@ -96,6 +98,7 @@ export const assets = {
   product_details_page_apple_earphone_image4,
   product_details_page_apple_earphone_image5,
   checkmark
+  
 };
 
 export const BagIcon = () => {

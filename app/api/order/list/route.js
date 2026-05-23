@@ -13,7 +13,7 @@ export async function GET(request) {
 
     await connectDB();
 
-    const orders = await Order.find({ userId })
+    const orders = await Order.find({ userId ,$or:[{paymentType: "COD"},{ paymentType:'Stripe, isPaid:true'}]})
       .populate("address")
       .populate("items.product"); // ✅ populate product name/image
 

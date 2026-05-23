@@ -4,10 +4,12 @@ import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 const OrderSummary = () => {
+
   const { currency, router, getCartCount, getCartAmount, getToken, user, cartItems, setCartItems } = useAppContext();
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [userAddresses, setUserAddresses] = useState([]);
+  const [isPlaceOrderClicked, setIsPlaceOrderClicked] = useState(false);
 
   const fetchUserAddresses = async () => {
     try {
@@ -54,7 +56,7 @@ const OrderSummary = () => {
       );
 
       if (data.success) {
-        toast.success(data.message);
+        toast.success("Order placed successfully");
         setCartItems({});
         router.push("/order-placed");
       } else {
@@ -86,18 +88,18 @@ const OrderSummary = () => {
       );
       if (data.success) {
         window.location.href = data.url;
-      }else {
+      } else {
         toast.error(data.message);
       }
-    }catch (error) {
-
+    } catch (error) {
+      toast.error(error.message);
     }
   };
+
   useEffect(() => {
     if (user) fetchUserAddresses();
   }, [user]);
 
-  // ✅ Safe cart calculations
   const itemsAmount = Number(getCartAmount()) || 0;
   const taxAmount = Number((itemsAmount * 0.02).toFixed(2));
   const totalAmount = itemsAmount + taxAmount;
@@ -107,7 +109,6 @@ const OrderSummary = () => {
       <h2 className="text-xl md:text-2xl font-medium text-gray-700">Order Summary</h2>
       <hr className="border-gray-500/30 my-5" />
 
-      {/* Address selection */}
       <div className="space-y-6">
         <div>
           <label className="text-base font-medium uppercase text-gray-600 block mb-2">Select Address</label>
@@ -115,6 +116,7 @@ const OrderSummary = () => {
             <button
               className="peer w-full text-left px-4 pr-2 py-2 bg-white text-gray-700 focus:outline-none"
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              suppressHydrationWarning
             >
               <span>
                 {selectedAddress
@@ -160,8 +162,18 @@ const OrderSummary = () => {
         <div>
           <label className="text-base font-medium uppercase text-gray-600 block mb-2">Promo Code</label>
           <div className="flex flex-col items-start gap-3">
-            <input type="text" placeholder="Enter promo code" className="flex-grow w-full outline-none p-2.5 text-gray-600 border" />
-            <button className="bg-orange-600 text-white px-9 py-2 hover:bg-orange-700">Apply</button>
+            <input
+              type="text"
+              placeholder="Enter promo code"
+              className="flex-grow w-full outline-none p-2.5 text-gray-600 border"
+              suppressHydrationWarning
+            />
+            <button
+              className="bg-orange-600 text-white px-9 py-2 hover:bg-orange-700"
+              suppressHydrationWarning
+            >
+              Apply
+            </button>
           </div>
         </div>
 
@@ -188,9 +200,32 @@ const OrderSummary = () => {
         </div>
       </div>
 
-      <button onClick={createOrderStripe} className="w-full bg-orange-600 text-white py-3 mt-5 hover:bg-orange-700">
-        Place Order
-      </button>
+      {!isPlaceOrderClicked ? (
+        <button
+          onClick={() => setIsPlaceOrderClicked(true)}
+          className="w-full bg-orange-600 text-white py-3 mt-5 hover:bg-orange-700"
+          suppressHydrationWarning
+        >
+          Place Order
+        </button>
+      ) : (
+        <div className="flex gap-2">
+          <button
+            onClick={createOrder}
+            className="w-full bg-orange-600 text-white py-3 mt-5 hover:bg-orange-700"
+            suppressHydrationWarning
+          >
+            Cash on Delivery
+          </button>
+          <button
+            onClick={createOrderStripe}
+            className="w-full flex justify-center items-center border border-indigo-500 bg-white hover:bg-gray-100 py-2 mt-5 text-indigo-600 font-medium text-sm"
+            suppressHydrationWarning
+          >
+            Pay with Stripe
+          </button>
+        </div>
+      )}
     </div>
   );
 };

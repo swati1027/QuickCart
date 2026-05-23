@@ -11,7 +11,7 @@ export async function POST(request) {
   try {
     const { userId } = getAuth(request);
     const { items, addressId } = await request.json();
-    const origin = request.headers.get('origin'); // ← fixed: headers not header
+    const origin = request.headers.get('origin');
 
     await connectDB();
     let productData = [];
@@ -37,39 +37,49 @@ export async function POST(request) {
 
     const filteredItems = orderItems.filter(item => item !== null);
 
-    const amount = Math.round(
+    const subtotal = Math.round(
       filteredItems.reduce(
         (total, item) => total + item.price * item.quantity,
         0
       ) * 100
     ) / 100;
 
+    // ✅ Add 2% tax
+    const tax = Math.round(subtotal * 0.02 * 100) / 100;
+    const amount = Math.round((subtotal + tax) * 100) / 100;
+
     const order = await Order.create({
       userId,
       items: filteredItems,
       address: addressId,
-      amount,
+      amount, // ← now includes tax
       date: Date.now(),
       paymentType: "Stripe"
     });
 
-    // Create line items for Stripe
-    const line_items = productData.map(item => { // ← fixed: renamed to line_items
-      return {
+    // ✅ Line items with tax as separate line
+    const line_items = [
+      ...productData.map(item => ({
         price_data: {
           currency: "usd",
-          product_data: {
-            name: item.name
-          },
-          unit_amount: Math.round(item.price * 100), // ← fixed: round to avoid decimals
+          product_data: { name: item.name },
+          unit_amount: Math.round(item.price * 100),
         },
         quantity: item.quantity
-      };
-    });
+      })),
+      // ✅ Tax line item
+      {
+        price_data: {
+          currency: "usd",
+          product_data: { name: "Tax (2%)" },
+          unit_amount: Math.round(tax * 100),
+        },
+        quantity: 1
+      }
+    ];
 
-    // Create Stripe session
     const session = await stripe.checkout.sessions.create({
-      line_items, // ← now matches variable name
+      line_items,
       mode: "payment",
       success_url: `${origin}/order-placed`,
       cancel_url: `${origin}/cart`,
@@ -79,11 +89,9 @@ export async function POST(request) {
       }
     });
 
-    const url = session.url;
-
     return NextResponse.json({
       success: true,
-      url
+      url: session.url
     });
 
   } catch (error) {
