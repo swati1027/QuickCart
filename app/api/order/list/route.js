@@ -1,5 +1,6 @@
 import connectDB from "@/config/db";
 import Order from "@/models/Order";
+import Address from "@/models/Address";
 import { getAuth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
@@ -13,7 +14,7 @@ export async function GET(request) {
 
     await connectDB();
 
-    const orders = await Order.find({ userId ,$or:[{paymentType: "COD"},{ paymentType:'Stripe, isPaid:true'}]})
+    const orders = await Order.find({ userId ,$or:[{paymentType: "COD"},{ paymentType:'Stripe', isPaid:true}]})
       .populate("address")
       .populate("items.product"); // ✅ populate product name/image
 

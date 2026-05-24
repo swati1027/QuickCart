@@ -1,6 +1,7 @@
 import connectDB from "@/config/db";
 import Order from "@/models/Order";
 import Product from "@/models/Product";
+import Address from "@/models/Address";
 import { getAuth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
@@ -10,7 +11,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 export async function POST(request) {
   try {
     const { userId } = getAuth(request);
-    const { items, addressId } = await request.json();
+    const { items, address } = await request.json();
     const origin = request.headers.get('origin');
 
     await connectDB();
@@ -44,14 +45,14 @@ export async function POST(request) {
       ) * 100
     ) / 100;
 
-    // ✅ Add 2% tax
-    const tax = Math.round(subtotal * 0.02 * 100) / 100;
+    // ✅ Add 0.5% tax
+    const tax = Math.round(subtotal * 0.005 * 100) / 100;
     const amount = Math.round((subtotal + tax) * 100) / 100;
 
     const order = await Order.create({
       userId,
       items: filteredItems,
-      address: addressId,
+      address: address,
       amount, // ← now includes tax
       date: Date.now(),
       paymentType: "Stripe"
@@ -71,7 +72,7 @@ export async function POST(request) {
       {
         price_data: {
           currency: "usd",
-          product_data: { name: "Tax (2%)" },
+          product_data: { name: "Tax (0.5%)" },
           unit_amount: Math.round(tax * 100),
         },
         quantity: 1

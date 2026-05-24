@@ -1,13 +1,14 @@
 import connectDB from "@/config/db";
 import Order from "@/models/Order";
 import Product from "@/models/Product";
+import Address from "@/models/Address"; // ✅ Add this
 import { getAuth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 
 export async function POST(request) {
   try {
     const { userId } = getAuth(request);
-    const { items, address } = await request.json(); // ← fixed: addressId → address
+    const { items, address } = await request.json();
 
     await connectDB();
 
@@ -40,7 +41,7 @@ export async function POST(request) {
     const order = await Order.create({
       userId,
       items: filteredItems,
-      address, // ← fixed: addressId → address
+      address,
       amount,
       date: Date.now(),
       paymentType: "COD"

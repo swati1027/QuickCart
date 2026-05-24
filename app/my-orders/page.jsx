@@ -1,7 +1,7 @@
 'use client'; 
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { assets, orderDummyData } from "@/assets/assets";
+import { assets } from "@/assets/assets";
 import Image from "next/image";
 import { useAppContext } from "@/context/AppContext";
 import Footer from "@/components/Footer";
@@ -18,7 +18,7 @@ const MyOrders = () => {
 
     const fetchOrders = async () => {
        try {
-        const token = await getToken()
+        const token = await getToken();
         const { data } = await axios.get('/api/order/list', {
             headers: {
                 Authorization: `Bearer ${token}`
@@ -26,15 +26,15 @@ const MyOrders = () => {
         });
 
         if (data.success) {
-            setOrders(data.orders.reverse())
-            setLoading(false)
+            setOrders(data.orders.reverse());
+            setLoading(false);
         } else {
-            toast.error(data.message)
+            toast.error(data.message);
         }
        } catch (error) {
-         toast.error(error.message)
+         toast.error(error.message);
        }
-    }
+    };
 
     useEffect(() => {
         if (user) {
@@ -60,26 +60,31 @@ const MyOrders = () => {
                                         />
                                         <p className="flex flex-col gap-3">
                                             <span className="font-medium text-base">
-                                                {order.items.map((item) => item.product?.name + ` x ${item.quantity}`).join(", ")}
+                                                {/* ✅ Use snapshot name, not item.product?.name */}
+                                                {order.items.map((item) => `${item.name} x ${item.quantity}`).join(", ")}
                                             </span>
                                             <span>Items : {order.items.length}</span>
                                         </p>
                                     </div>
 
-                                    {/* ✅ FIXED: optional chaining on all address fields */}
                                     <div>
                                         <p>
                                             <span className="font-medium">{order.address?.fullName}</span>
                                             <br />
                                             <span>{order.address?.area}</span>
                                             <br />
-                                            <span>{order.address?.city && order.address?.state ? `${order.address.city}, ${order.address.state}` : ''}</span>
+                                            <span>
+                                                {order.address?.city && order.address?.state
+                                                    ? `${order.address.city}, ${order.address.state}`
+                                                    : ''}
+                                            </span>
                                             <br />
                                             <span>{order.address?.phoneNumber}</span>
                                         </p>
                                     </div>
 
                                     <p className="font-medium my-auto">{currency}{order.amount}</p>
+
                                     <div>
                                         <p className="flex flex-col">
                                             <span>Method : {order.paymentType || 'COD'}</span>
