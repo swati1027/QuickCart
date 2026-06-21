@@ -1,13 +1,13 @@
 # QuickCart - A simple eCommerce website
 
 QuickCart is an open-source **Next.js eCommerce frontend** project.  
-It provides a modern, fast and customizable shopping UI.  
+It provides a modern, fast and customizable shopping UI.
 
+🔗 Live Demo:https://quick-cart-black-alpha.vercel.app
 
 ---
 
 ## Features
-
 -   Built with **Next.js + Tailwind CSS**
 -   Responsive design
 -   Reusable components
@@ -17,32 +17,24 @@ It provides a modern, fast and customizable shopping UI.
 ---
 
 ## Getting Started
-
 1. Clone the repo
-
-    ```bash
+```bash
     git clone https://github.com/swati1027/QuickCart.git
     cd QuickCart
-    ```
-
+```
 2. Install dependencies
-
-    ```bash
+```bash
     npm install
-    ```
-
+```
 3. Run locally
-
-    ```bash
+```bash
     npm run dev
-    ```
+```
 
 ---
 
 ## Contributing
-
 We welcome all kinds of contributions! You can:
-
 - Create new pages
 - Improve layouts
 - Add animations and transitions
@@ -59,11 +51,9 @@ Check out [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines.
 ---
 
 ## License
-
 This project is licensed under the **MIT License**.
 
 ---
 
 ## 🌟 Contributors
-
 Thanks to everyone who contributes to **QuickCart**!
